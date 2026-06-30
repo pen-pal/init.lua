@@ -65,7 +65,8 @@ local function render_to_png(file, ext, cb)
         end)
     elseif PANDOC_EXT[ext] then
         local pdf = tmpfile("pdf")
-        vim.system({ "pandoc", file, "-o", pdf }, {}, function(r)
+        -- xelatex handles unicode (emoji, ⌥, box-drawing) that pdflatex rejects
+        vim.system({ "pandoc", file, "--pdf-engine=xelatex", "-o", pdf }, {}, function(r)
             vim.schedule(function()
                 if r.code == 0 then pdf_to_png(pdf, cb) else cb(nil, r.stderr) end
             end)

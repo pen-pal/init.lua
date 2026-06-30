@@ -6,7 +6,7 @@
 
 > **Mode legend:** n=normal, i=insert, v=visual, x=visual-block/charwise, o=operator-pending, s=select. Buffer-local maps noted.
 
----
+-
 
 ## Core / motions (`remap.lua`)
 | Key | Mode | Action |

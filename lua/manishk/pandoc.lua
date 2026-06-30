@@ -14,7 +14,12 @@ local function export(ext, open)
     vim.cmd("silent write")
     local out = vim.fn.expand("%:p:r") .. "." .. ext
     vim.notify("pandoc → " .. ext .. " …", vim.log.levels.INFO)
-    vim.system({ "pandoc", file, "-o", out }, { text = true }, function(res)
+    local cmd = { "pandoc", file, "-o", out }
+    if ext == "pdf" then
+        -- xelatex handles unicode (emoji, ⌥, box-drawing) that pdflatex rejects
+        table.insert(cmd, "--pdf-engine=xelatex")
+    end
+    vim.system(cmd, { text = true }, function(res)
         vim.schedule(function()
             if res.code == 0 then
                 vim.notify("pandoc: " .. out, vim.log.levels.INFO)
