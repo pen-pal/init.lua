@@ -1,5 +1,6 @@
 return {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" }, -- lazy-load on opening a file
     dependencies = {
         "stevearc/conform.nvim",
         "williamboman/mason.nvim",
