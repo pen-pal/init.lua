@@ -46,6 +46,12 @@ return {
                     }
                 end,
 
+                -- disable duplicate language servers that fight over the same
+                -- filetype (and trigger nvim-navic "already attached" warnings).
+                -- Keep pyright for Python and vtsls for JS/TS.
+                ["pylsp"] = function() end,
+                ["ts_ls"] = function() end,
+
                 zls = function()
                     local lspconfig = require("lspconfig")
                     lspconfig.zls.setup({
