@@ -38,7 +38,7 @@ end
 local function pdf_to_png(pdf, cb)
     local prefix = vim.fn.tempname()
     vim.system({
-        "gs", "-dBATCH", "-dNOPAUSE", "-dQUIET", "-sDEVICE=png16m", "-r150",
+        "gs", "-dBATCH", "-dNOPAUSE", "-dQUIET", "-sDEVICE=png16m", "-r200",
         "-sOutputFile=" .. prefix .. "-%03d.png", pdf,
     }, {}, function(r)
         vim.schedule(function()
@@ -72,8 +72,9 @@ local function render_to_png(file, ext, cb)
         local png = tmpfile("png")
         vim.system({
             browser, "--headless=new", "--disable-gpu", "--hide-scrollbars",
-            "--virtual-time-budget=3000", -- let JS/CDN (Tailwind, fonts) finish
-            "--screenshot=" .. png, "--window-size=1440,2400",
+            "--virtual-time-budget=3500",      -- let JS/CDN (Tailwind, fonts) finish
+            "--force-device-scale-factor=2",   -- 2x DPI → crisp, readable text
+            "--screenshot=" .. png, "--window-size=1500,3200",
             "file://" .. file,
         }, {}, function(r)
             vim.schedule(function()
@@ -133,10 +134,15 @@ local function display(png)
     local iw, ih = dim:match("(%d+)%s+(%d+)")
     iw, ih = tonumber(iw) or 1440, tonumber(ih) or 2400
 
-    -- one clean preview window (close any previous, open a fresh vsplit)
+    -- solid opaque background for the preview window so the desktop/other
+    -- windows don't bleed through (the global Normal is bg=none/transparent).
+    vim.api.nvim_set_hl(0, "PreviewNormal", { bg = "#0b0e14", fg = "#c0caf5" })
+
+    -- one clean preview window (close any previous, open a fresh vsplit ~55%)
     close_preview()
     local src_win = vim.api.nvim_get_current_win()
     vim.cmd("botright vsplit")
+    vim.cmd("vertical resize " .. math.floor(vim.o.columns * 0.55))
     state.win = vim.api.nvim_get_current_win()
     state.buf = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_win_set_buf(state.win, state.buf)
@@ -146,6 +152,7 @@ local function display(png)
     vim.wo[state.win].relativenumber = false
     vim.wo[state.win].cursorline = false
     vim.wo[state.win].list = false
+    vim.wo[state.win].winhighlight = "Normal:PreviewNormal,NormalNC:PreviewNormal,EndOfBuffer:PreviewNormal"
 
     -- keep focus on the source file immediately
     if vim.api.nvim_win_is_valid(src_win) then
@@ -261,11 +268,11 @@ function M.open_external()
     end
 end
 
-vim.api.nvim_create_user_command("Preview", M.open_external, {})       -- reliable: native app
-vim.api.nvim_create_user_command("PreviewSplit", M.preview, {})        -- experimental: in-editor image
+vim.api.nvim_create_user_command("Preview", M.preview, {})             -- in-editor split
+vim.api.nvim_create_user_command("PreviewExternal", M.open_external, {}) -- native app
 vim.api.nvim_create_user_command("PreviewClose", M.close, {})
-vim.keymap.set("n", "<leader>vp", M.open_external, { desc = "Preview in native app (browser/Preview/Skim)" })
-vim.keymap.set("n", "<leader>vs", M.preview, { desc = "Preview in split (experimental, in-editor image)" })
-vim.keymap.set("n", "<leader>vP", M.close, { desc = "Close in-editor preview split" })
+vim.keymap.set("n", "<leader>vp", M.preview, { desc = "Preview in split (image/pdf/md/html/tex)" })
+vim.keymap.set("n", "<leader>vo", M.open_external, { desc = "Preview in native app (browser/Preview/Skim)" })
+vim.keymap.set("n", "<leader>vP", M.close, { desc = "Close preview split" })
 
 return M
