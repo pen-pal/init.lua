@@ -16,10 +16,8 @@ return {
     },
 
     config = function()
-        require("conform").setup({
-            formatters_by_ft = {
-            }
-        })
+        -- NOTE: conform is configured in lazy/conform.lua. Do not call
+        -- conform.setup() here — an empty setup would wipe those formatters.
         local cmp = require('cmp')
         local cmp_lsp = require("cmp_nvim_lsp")
         local capabilities = vim.tbl_deep_extend(
@@ -142,7 +140,6 @@ return {
             }),
             sources = cmp.config.sources({
                 { name = "lazydev", group_index = 0 }, -- nvim Lua API; skips others on require paths
-                { name = "copilot", group_index = 2 },
                 { name = 'nvim_lsp' },
                 { name = 'luasnip' }, -- For luasnip users.
             }, {
