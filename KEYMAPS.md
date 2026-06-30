@@ -229,6 +229,24 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 ## Auto (no keymap)
 **barbecue** breadcrumb winbar · **nvim-lint** (rubocop/eslint_d/shellcheck/hadolint if installed) · **dressing** select/input UI · **nvim-bqf** quickfix preview · **render-markdown** inline md · **nvim-dap-virtual-text** inline debug values · **colorizer** hex swatches · **indent-blankline** guides · **autopairs** · **fidget** LSP progress · **noice** LSP doc borders (cmdline popup disabled).
 
+## AI agents (`<leader>i` prefix)
+**claudecode.nvim** — Claude Code in nvim, reuses your `claude` CLI login (no API key):
+| Key | Action |
+|---|---|
+| `<leader>ic` | Toggle Claude Code split |
+| `<leader>if` | Focus Claude window |
+| `<leader>ir` / `<leader>iC` | Resume / continue session |
+| `<leader>ib` | Add current buffer to Claude |
+| `<leader>is` | Send selection to Claude (visual) |
+| `<leader>iy` / `<leader>id` | Accept / deny proposed diff |
+
+**codecompanion.nvim** — multi-provider chat/inline (needs `ANTHROPIC_API_KEY`):
+| Key | Action |
+|---|---|
+| `<leader>io` | Chat toggle (n/v) |
+| `<leader>ip` | Actions palette |
+| `<leader>ii` | Inline edit (visual) |
+
 ## `local.lua` (active — leader 9 / `99` agent)
 | Key | Action |
 |---|---|
