@@ -78,7 +78,7 @@ return {
                                     globals = { 'vim' },
                                 },
                                 workspace = {
-                                    library = vim.api.nvim_get_runtime_file("", true),
+                                    -- library managed on-demand by lazydev.nvim
                                     checkThirdParty = false,
                                 },
                                 format = {
@@ -141,6 +141,7 @@ return {
                 ["<C-Space>"] = cmp.mapping.complete(),
             }),
             sources = cmp.config.sources({
+                { name = "lazydev", group_index = 0 }, -- nvim Lua API; skips others on require paths
                 { name = "copilot", group_index = 2 },
                 { name = 'nvim_lsp' },
                 { name = 'luasnip' }, -- For luasnip users.
