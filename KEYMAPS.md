@@ -216,8 +216,9 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 ## Documents / preview
 | Key | Action |
 |---|---|
-| `<leader>vp` | **Universal preview in a split** — image/pdf/md/html/tex/docx rendered in-editor (`:Preview`, needs Ghostty) |
-| `<leader>vP` | Close preview split (`:PreviewClose`) |
+| `<leader>vp` | **Preview in native app** (`:Preview`) — browser for html/md, Preview for pdf/images, Skim for tex. Crisp + reliable. |
+| `<leader>vs` | Preview in an in-editor split (`:PreviewSplit`) — experimental terminal-image; needs Ghostty, limited under transparency |
+| `<leader>vP` | Close in-editor preview split (`:PreviewClose`) |
 | `<leader>mp` | Markdown live preview in browser (auto-refresh, markdown-preview.nvim) |
 | `<leader>Pp` / `<leader>Ph` / `<leader>Pd` | Pandoc export current buffer → PDF / HTML / docx (opens result) |
 | `<leader>oeh` / `<leader>oep` / `<leader>oex` | Org → HTML / PDF / babel-execute (headless emacs) |

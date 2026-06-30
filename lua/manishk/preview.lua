@@ -204,9 +204,68 @@ function M.close()
     close_preview()
 end
 
-vim.api.nvim_create_user_command("Preview", M.preview, {})
+-- Open the file's rendered form in the proper native app (browser / Preview /
+-- Skim). Reliable + crisp + scrollable — the recommended preview. Images, pdf
+-- and html open directly; md/rst/org/docx are converted to html first; tex is
+-- compiled to pdf first.
+local function sys_open(path)
+    if vim.ui and vim.ui.open then
+        vim.ui.open(path)
+    else
+        vim.system({ "open", path })
+    end
+end
+
+function M.open_external()
+    local file = vim.fn.expand("%:p")
+    if file == "" then
+        vim.notify("No file to preview", vim.log.levels.WARN)
+        return
+    end
+    if vim.bo.modified then vim.cmd("silent write") end
+    local ext = vim.fn.expand("%:e"):lower()
+
+    if IMG_EXT[ext] or ext == "pdf" or ext == "html" or ext == "htm" then
+        sys_open(file)
+    elseif ext == "md" or ext == "markdown" then
+        -- live browser preview if available, else pandoc -> html
+        if vim.fn.exists(":MarkdownPreview") ~= 0 then
+            vim.cmd("MarkdownPreview")
+        else
+            local out = tmpfile("html")
+            vim.system({ "pandoc", file, "-o", out }, {}, function(r)
+                vim.schedule(function()
+                    if r.code == 0 then sys_open(out) else vim.notify(r.stderr or "pandoc failed", vim.log.levels.ERROR) end
+                end)
+            end)
+        end
+    elseif PANDOC_EXT[ext] then
+        local out = tmpfile("html")
+        vim.notify("pandoc → html …", vim.log.levels.INFO)
+        vim.system({ "pandoc", file, "-o", out }, {}, function(r)
+            vim.schedule(function()
+                if r.code == 0 then sys_open(out) else vim.notify(r.stderr or "pandoc failed", vim.log.levels.ERROR) end
+            end)
+        end)
+    elseif ext == "tex" or ext == "latex" then
+        local outdir = vim.fn.fnamemodify(file, ":h")
+        vim.notify("latexmk → pdf …", vim.log.levels.INFO)
+        vim.system({ "latexmk", "-pdf", "-interaction=nonstopmode", "-outdir=" .. outdir, file }, {}, function(r)
+            vim.schedule(function()
+                local pdf = vim.fn.fnamemodify(file, ":r") .. ".pdf"
+                if vim.fn.filereadable(pdf) == 1 then sys_open(pdf) else vim.notify(r.stderr or "latexmk failed", vim.log.levels.ERROR) end
+            end)
+        end)
+    else
+        sys_open(file)
+    end
+end
+
+vim.api.nvim_create_user_command("Preview", M.open_external, {})       -- reliable: native app
+vim.api.nvim_create_user_command("PreviewSplit", M.preview, {})        -- experimental: in-editor image
 vim.api.nvim_create_user_command("PreviewClose", M.close, {})
-vim.keymap.set("n", "<leader>vp", M.preview, { desc = "Preview file in split (image/pdf/md/html/tex)" })
-vim.keymap.set("n", "<leader>vP", M.close, { desc = "Close preview split" })
+vim.keymap.set("n", "<leader>vp", M.open_external, { desc = "Preview in native app (browser/Preview/Skim)" })
+vim.keymap.set("n", "<leader>vs", M.preview, { desc = "Preview in split (experimental, in-editor image)" })
+vim.keymap.set("n", "<leader>vP", M.close, { desc = "Close in-editor preview split" })
 
 return M
