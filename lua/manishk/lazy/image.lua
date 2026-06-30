@@ -17,10 +17,11 @@ return {
             html = { enabled = false },
             css = { enabled = false },
         },
-        max_width = 100,
-        max_height = 12,
-        max_width_window_percentage = nil,
-        max_height_window_percentage = 30,
+        -- no tiny caps: let the preview pane fill its split (was max_height=12
+        -- rows + 30% which shrank everything to a thumbnail). Width-capped to
+        -- the window; height free so tall pages render and scroll.
+        max_width_window_percentage = 100,
+        max_height_window_percentage = nil,
         window_overlap_clear_enabled = true,
         editor_only_render_when_focused = true,
         tmux_show_only_in_active_window = true,
