@@ -105,6 +105,7 @@ autocmd('LspAttach', {
 
 require("manishk.pandoc")
 require("manishk.preview")
+require("manishk.neovide")
 
 vim.g.netrw_browse_split = 0
 vim.g.netrw_banner = 0
