@@ -26,12 +26,12 @@ return {
             require("mini.bufremove").delete(0, false)
         end, { desc = "Delete buffer" })
 
-        -- Neovide-like animations: smooth scroll + window resize/open/close.
-        -- cursor animation is left to smear-cursor.nvim (disabled here).
+        -- Neovide-like animations. scroll disabled (felt sluggish + fights the
+        -- <C-d>zz/<C-u>zz centering remaps); cursor left to smear-cursor.nvim.
         local animate = require("mini.animate")
         animate.setup({
             cursor = { enable = false },
-            scroll = { enable = true },
+            scroll = { enable = false },
             resize = { enable = true },
             open = { enable = true },
             close = { enable = true },
