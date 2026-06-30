@@ -3,10 +3,13 @@ return {
 	opts = {},
 	config = function()
 		require("conform").setup({
-			format_on_save = {
-				timeout_ms = 5000,
-                lsp_format = "fallback",
-			},
+			format_on_save = function(bufnr)
+				-- respect :FormatToggle (global) and per-buffer opt-out
+				if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+					return
+				end
+				return { timeout_ms = 5000, lsp_format = "fallback" }
+			end,
 			formatters_by_ft = {
 				c = { "clang-format" },
 				cpp = { "clang-format" },

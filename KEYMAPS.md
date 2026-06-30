@@ -226,6 +226,19 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 
 **Markdown preview:** `:RenderMarkdown` inline (auto) + peek browser preview. **Images inline** (`image.nvim`): auto in **Ghostty/Kitty/WezTerm only** — Alacritty can't (no graphics protocol). **YAML/JSON**: schema-aware completion/validation auto (SchemaStore).
 
+## Editing / UX polish
+| Key | Action |
+|---|---|
+| `j` / `k` | Move by *visual* line on wrapped text (`5j` still = 5 real lines) |
+| `<leader>vt` | Toggle diagnostic virtual text |
+| `aa` / `ia` | Argument textobject (mini.ai) |
+| `ac` / `ic` | Class textobject (treesitter) |
+| `ao` / `io` | Conditional/loop textobject (treesitter) |
+| `af` / `if` | Function textobject |
+| `:FormatToggle` | Toggle format-on-save (global) |
+
+Auto: spell-check + `conceallevel=2` on markdown/org/text/gitcommit/tex; restore cursor to last position on reopen; auto-create missing dirs on save; rounded borders on hover/signature/diagnostic floats; pretty diagnostic signs (`✘ ▲ » ⚑`).
+
 ## Auto (no keymap)
 **barbecue** breadcrumb winbar · **nvim-lint** (rubocop/eslint_d/shellcheck/hadolint if installed) · **dressing** select/input UI · **nvim-bqf** quickfix preview · **render-markdown** inline md · **nvim-dap-virtual-text** inline debug values · **colorizer** hex swatches · **indent-blankline** guides · **autopairs** · **fidget** LSP progress · **noice** LSP doc borders (cmdline popup disabled).
 

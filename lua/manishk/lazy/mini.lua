@@ -2,8 +2,18 @@ return {
     "echasnovski/mini.nvim",
     version = "*",
     config = function()
-        -- better text objects (around/inside): aiwf, brackets, quotes, etc.
-        require("mini.ai").setup({})
+        -- better text objects: defaults (a=argument, q=quote, b=bracket, …)
+        -- plus treesitter class/conditional/loop objects.
+        local ai = require("mini.ai")
+        ai.setup({
+            custom_textobjects = {
+                c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }),
+                o = ai.gen_spec.treesitter({
+                    a = { "@conditional.outer", "@loop.outer" },
+                    i = { "@conditional.inner", "@loop.inner" },
+                }),
+            },
+        })
 
         -- move lines/selections with <M-j>/<M-k> (horizontal disabled to avoid
         -- clashing with <M-h> tmux-sessionizer binding)
