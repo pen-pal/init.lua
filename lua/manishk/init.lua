@@ -29,6 +29,25 @@ vim.filetype.add({
     }
 })
 
+-- bigfile guard: on very large files (>1.5MB) disable expensive features so
+-- editing stays responsive. Treesitter checks vim.b.bigfile before starting.
+autocmd("BufReadPre", {
+    group = manishkGroup,
+    callback = function(args)
+        local ok, stats = pcall((vim.uv or vim.loop).fs_stat, args.file)
+        if ok and stats and stats.size > 1.5 * 1024 * 1024 then
+            vim.b[args.buf].bigfile = true
+            vim.opt_local.foldmethod = "manual"
+            vim.opt_local.spell = false
+            vim.schedule(function()
+                if vim.api.nvim_buf_is_valid(args.buf) then
+                    vim.bo[args.buf].syntax = ""
+                end
+            end)
+        end
+    end,
+})
+
 autocmd('TextYankPost', {
     group = yank_group,
     pattern = '*',

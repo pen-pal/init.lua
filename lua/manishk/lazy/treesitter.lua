@@ -28,6 +28,7 @@ return {
 						return
 					end
 
+					if vim.b.bigfile then return end
 					pcall(vim.treesitter.start, 0)
 				end,
 			})
