@@ -216,6 +216,7 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 ## Documents / preview
 | Key | Action |
 |---|---|
+| `<leader>mp` | Markdown live preview in browser (auto-refresh, markdown-preview.nvim) |
 | `<leader>Pp` / `<leader>Ph` / `<leader>Pd` | Pandoc export current buffer → PDF / HTML / docx (opens result) |
 | `<leader>oeh` / `<leader>oep` / `<leader>oex` | Org → HTML / PDF / babel-execute (headless emacs) |
 | `\ll` / `\lv` / `\lc` | LaTeX (vimtex, in `.tex`): compile / view in Skim / clean — `\` = localleader |
