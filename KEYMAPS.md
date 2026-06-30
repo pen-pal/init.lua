@@ -199,6 +199,20 @@
 
 ---
 
+## Org-mode (nvim-orgmode, files in `~/org`)
+| Key | Action |
+|---|---|
+| `<leader>oa` | Agenda (global) |
+| `<leader>oc` | Capture — task / note / journal (global) |
+| `<leader>oeh` | Export current `.org` → HTML (via headless emacs) |
+| `<leader>oep` | Export current `.org` → PDF (via headless emacs) |
+| `<leader>oex` | Babel: execute code blocks in buffer (via headless emacs) |
+| `<leader>R` … | org-roam prefix: find / insert / capture nodes (vault `~/org/roam`) |
+
+In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<S-Up/Down>` priority, `<C-Space>` toggle checkbox, `<Tab>`/`<S-Tab>` fold, `<leader>o*` (org actions). See `:h orgmode-mappings`.
+
+> **emacs backend** = invisible. `<leader>oeh/oep/oex` shell out to `emacs --batch` (no window). Requires working `emacs` (emacs-plus@30, verified). Editing/agenda/capture need NO emacs — pure nvim-orgmode.
+
 ## Auto (no keymap)
 **barbecue** breadcrumb winbar · **nvim-lint** (rubocop/eslint_d/shellcheck/hadolint if installed) · **dressing** select/input UI · **nvim-bqf** quickfix preview · **render-markdown** inline md · **nvim-dap-virtual-text** inline debug values · **colorizer** hex swatches · **indent-blankline** guides · **autopairs** · **fidget** LSP progress · **noice** LSP doc borders (cmdline popup disabled).
 
