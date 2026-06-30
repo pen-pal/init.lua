@@ -4,3 +4,6 @@ plugin/packer_compiled.lua
 
 # machine-specific shadow binaries (curl, tree-sitter symlinks)
 bin/
+
+# macOS junk
+.DS_Store
