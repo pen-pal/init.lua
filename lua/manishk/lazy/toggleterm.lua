@@ -1,6 +1,8 @@
 return {
     "akinsho/toggleterm.nvim",
     version = "*",
+    keys = { [[<c-\>]] },
+    cmd = { "ToggleTerm", "TermExec" },
     config = function()
         require("toggleterm").setup({
             open_mapping = [[<c-\>]],

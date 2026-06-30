@@ -1,6 +1,8 @@
 return {
     "laytan/cloak.nvim",
-    config = function() 
+    event = { "BufReadPre", "BufNewFile" },
+    cmd = "CloakToggle",
+    config = function()
         require("cloak").setup({
             enabled = true,
             cloak_character = "*",
