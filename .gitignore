@@ -1,0 +1,6 @@
+plugin/packer_compiled.lua
+
+/tmp/
+
+# machine-specific shadow binaries (curl, tree-sitter symlinks)
+bin/
