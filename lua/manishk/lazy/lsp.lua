@@ -12,6 +12,7 @@ return {
         "L3MON4D3/LuaSnip",
         "saadparwaiz1/cmp_luasnip",
         "j-hui/fidget.nvim",
+        "b0o/schemastore.nvim",
     },
 
     config = function()
@@ -37,6 +38,8 @@ return {
                 "vtsls",
                 "tailwindcss",
                 "ruby_lsp",
+                "yamlls",
+                "jsonls",
             },
             handlers = {
                 function(server_name) -- default handler (optional)
@@ -96,6 +99,28 @@ return {
                     lspconfig.tailwindcss.setup({
                         capabilities = capabilities,
                         filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "svelte", "heex" },
+                    })
+                end,
+                ["yamlls"] = function()
+                    require("lspconfig").yamlls.setup({
+                        capabilities = capabilities,
+                        settings = {
+                            yaml = {
+                                schemaStore = { enable = false, url = "" },
+                                schemas = require("schemastore").yaml.schemas(),
+                            },
+                        },
+                    })
+                end,
+                ["jsonls"] = function()
+                    require("lspconfig").jsonls.setup({
+                        capabilities = capabilities,
+                        settings = {
+                            json = {
+                                schemas = require("schemastore").json.schemas(),
+                                validate = { enable = true },
+                            },
+                        },
                     })
                 end,
             }

@@ -213,6 +213,15 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 
 > **emacs backend** = invisible. `<leader>oeh/oep/oex` shell out to `emacs --batch` (no window). Requires working `emacs` (emacs-plus@30, verified). Editing/agenda/capture need NO emacs — pure nvim-orgmode.
 
+## Documents / preview
+| Key | Action |
+|---|---|
+| `<leader>Pp` / `<leader>Ph` / `<leader>Pd` | Pandoc export current buffer → PDF / HTML / docx (opens result) |
+| `<leader>oeh` / `<leader>oep` / `<leader>oex` | Org → HTML / PDF / babel-execute (headless emacs) |
+| `\ll` / `\lv` / `\lc` | LaTeX (vimtex, in `.tex`): compile / view in Skim / clean — `\` = localleader |
+
+**Markdown preview:** `:RenderMarkdown` inline (auto) + peek browser preview. **Images inline** (`image.nvim`): auto in **Ghostty/Kitty/WezTerm only** — Alacritty can't (no graphics protocol). **YAML/JSON**: schema-aware completion/validation auto (SchemaStore).
+
 ## Auto (no keymap)
 **barbecue** breadcrumb winbar · **nvim-lint** (rubocop/eslint_d/shellcheck/hadolint if installed) · **dressing** select/input UI · **nvim-bqf** quickfix preview · **render-markdown** inline md · **nvim-dap-virtual-text** inline debug values · **colorizer** hex swatches · **indent-blankline** guides · **autopairs** · **fidget** LSP progress · **noice** LSP doc borders (cmdline popup disabled).
 
