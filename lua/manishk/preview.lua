@@ -113,6 +113,14 @@ end
 
 local state = { win = nil, buf = nil, img = nil }
 
+local function close_preview()
+    if state.img then pcall(function() state.img:clear() end) end
+    if state.win and vim.api.nvim_win_is_valid(state.win) then
+        pcall(vim.api.nvim_win_close, state.win, true)
+    end
+    state = { win = nil, buf = nil, img = nil }
+end
+
 local function display(png)
     local ok, image = pcall(require, "image")
     if not ok then
@@ -120,24 +128,31 @@ local function display(png)
         return
     end
 
-    -- clear previous render
-    if state.img then pcall(function() state.img:clear() end) end
+    -- pixel dimensions of the rendered image
+    local dim = vim.fn.system({ "magick", "identify", "-format", "%w %h", png })
+    local iw, ih = dim:match("(%d+)%s+(%d+)")
+    iw, ih = tonumber(iw) or 1440, tonumber(ih) or 2400
 
-    -- reuse the preview window/buffer if still open, else make a new vsplit
-    if not (state.win and vim.api.nvim_win_is_valid(state.win)) then
-        vim.cmd("botright vsplit")
-        state.win = vim.api.nvim_get_current_win()
-        state.buf = vim.api.nvim_create_buf(false, true)
-        vim.api.nvim_win_set_buf(state.win, state.buf)
-        vim.bo[state.buf].filetype = "preview"
-        vim.bo[state.buf].buftype = "nofile"
-        vim.wo[state.win].number = false
-        vim.wo[state.win].relativenumber = false
-        vim.wo[state.win].cursorline = false
-        vim.cmd("wincmd p")
-    end
-    -- give the buffer rows so the image has vertical room to scroll into
-    vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, vim.fn["repeat"]({ "" }, 400))
+    -- one clean preview window (close any previous, open a fresh vsplit)
+    close_preview()
+    local src_win = vim.api.nvim_get_current_win()
+    vim.cmd("botright vsplit")
+    state.win = vim.api.nvim_get_current_win()
+    state.buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_win_set_buf(state.win, state.buf)
+    vim.bo[state.buf].buftype = "nofile"
+    vim.bo[state.buf].filetype = "preview"
+    vim.wo[state.win].number = false
+    vim.wo[state.win].relativenumber = false
+    vim.wo[state.win].cursorline = false
+    vim.wo[state.win].list = false
+
+    -- fill the split width; derive height from aspect (terminal cells are
+    -- ~2x taller than wide, hence the /2) so the image isn't height-fitted
+    -- into a narrow strip.
+    local cols = vim.api.nvim_win_get_width(state.win)
+    local rows = math.max(1, math.floor(cols * ih / (iw * 2)))
+    vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, vim.fn["repeat"]({ "" }, rows + 2))
 
     state.img = image.from_file(png, {
         window = state.win,
@@ -145,9 +160,15 @@ local function display(png)
         with_virtual_padding = true,
         x = 0,
         y = 0,
-        width = vim.api.nvim_win_get_width(state.win),
+        width = cols,
+        height = rows,
     })
     state.img:render()
+
+    -- keep focus on the source file
+    if vim.api.nvim_win_is_valid(src_win) then
+        vim.api.nvim_set_current_win(src_win)
+    end
 end
 
 function M.preview()
@@ -174,11 +195,7 @@ function M.preview()
 end
 
 function M.close()
-    if state.img then pcall(function() state.img:clear() end) end
-    if state.win and vim.api.nvim_win_is_valid(state.win) then
-        vim.api.nvim_win_close(state.win, true)
-    end
-    state = { win = nil, buf = nil, img = nil }
+    close_preview()
 end
 
 vim.api.nvim_create_user_command("Preview", M.preview, {})
