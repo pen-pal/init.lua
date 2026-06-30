@@ -77,11 +77,21 @@ vim.keymap.set("n", "<leader>ca", function()
     require("cellular-automaton").start_animation("make_it_rain")
 end)
 
-vim.keymap.set("n", "<leader><leader>", function()
+local function safe_source()
     if vim.bo.filetype == "lua" or vim.bo.filetype == "vim" then
-        vim.cmd("so")
+        vim.cmd("source %")
     else
         vim.notify("Not sourcing: filetype is '" .. vim.bo.filetype .. "', not lua/vim", vim.log.levels.WARN)
     end
-end)
+end
+
+vim.keymap.set("n", "<leader><leader>", safe_source)
+
+-- guard bare `:so` / `:source` (no args) so sourcing a code file (e.g. .go)
+-- warns instead of spewing E492 for every line. `:so file.vim` still works.
+vim.api.nvim_create_user_command("So", safe_source, {})
+vim.cmd([[
+  cnoreabbrev <expr> so getcmdtype() ==# ':' && getcmdline() ==# 'so' ? 'So' : 'so'
+  cnoreabbrev <expr> source getcmdtype() ==# ':' && getcmdline() ==# 'source' ? 'So' : 'source'
+]])
 
