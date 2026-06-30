@@ -11,7 +11,24 @@
 local M = {}
 
 local IMG_EXT = { png = true, jpg = true, jpeg = true, gif = true, webp = true, bmp = true, svg = true, avif = true }
-local PANDOC_EXT = { md = true, markdown = true, html = true, htm = true, rst = true, org = true, docx = true, epub = true }
+-- document-style formats → pandoc → PDF. (html is handled by a real browser
+-- instead, since pandoc can't run JS / load CSS / Tailwind.)
+local PANDOC_EXT = { md = true, markdown = true, rst = true, org = true, docx = true, epub = true }
+
+-- find a Chromium-based browser for rendering real web pages (CSS/JS/Tailwind)
+local function find_browser()
+    local candidates = {
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "/Applications/Chromium.app/Contents/MacOS/Chromium",
+        "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+        "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+        "/Applications/Arc.app/Contents/MacOS/Arc",
+    }
+    for _, b in ipairs(candidates) do
+        if vim.fn.executable(b) == 1 then return b end
+    end
+    return nil
+end
 
 local function tmpfile(ext)
     return vim.fn.tempname() .. "." .. ext
@@ -46,7 +63,25 @@ end
 
 -- render the current file to a PNG, call cb(png|nil, err)
 local function render_to_png(file, ext, cb)
-    if ext == "pdf" then
+    if ext == "html" or ext == "htm" then
+        -- render real web pages with a headless browser (runs JS, loads CSS/CDN)
+        local browser = find_browser()
+        if not browser then
+            return cb(nil, "no Chromium-based browser found to render HTML")
+        end
+        local png = tmpfile("png")
+        vim.system({
+            browser, "--headless=new", "--disable-gpu", "--hide-scrollbars",
+            "--virtual-time-budget=3000", -- let JS/CDN (Tailwind, fonts) finish
+            "--screenshot=" .. png, "--window-size=1440,2400",
+            "file://" .. file,
+        }, {}, function(r)
+            vim.schedule(function()
+                -- chrome may exit non-zero on macOS despite success; check file
+                if vim.fn.filereadable(png) == 1 then cb(png) else cb(nil, r.stderr) end
+            end)
+        end)
+    elseif ext == "pdf" then
         pdf_to_png(file, cb)
     elseif ext == "tex" or ext == "latex" then
         local outdir = vim.fn.fnamemodify(file, ":h")
