@@ -147,28 +147,34 @@ local function display(png)
     vim.wo[state.win].cursorline = false
     vim.wo[state.win].list = false
 
-    -- fill the split width; derive height from aspect (terminal cells are
-    -- ~2x taller than wide, hence the /2) so the image isn't height-fitted
-    -- into a narrow strip.
-    local cols = vim.api.nvim_win_get_width(state.win)
-    local rows = math.max(1, math.floor(cols * ih / (iw * 2)))
-    vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, vim.fn["repeat"]({ "" }, rows + 2))
-
-    state.img = image.from_file(png, {
-        window = state.win,
-        buffer = state.buf,
-        with_virtual_padding = true,
-        x = 0,
-        y = 0,
-        width = cols,
-        height = rows,
-    })
-    state.img:render()
-
-    -- keep focus on the source file
+    -- keep focus on the source file immediately
     if vim.api.nvim_win_is_valid(src_win) then
         vim.api.nvim_set_current_win(src_win)
     end
+
+    -- defer sizing+render until the split has actually been laid out, else
+    -- nvim_win_get_width returns a stale (pre-layout) value → wrong size.
+    vim.schedule(function()
+        if not (state.win and vim.api.nvim_win_is_valid(state.win)) then return end
+        -- fill the split width; derive height from aspect (cells are ~2x
+        -- taller than wide, hence the /2) so it isn't a narrow strip.
+        local cols = vim.api.nvim_win_get_width(state.win)
+        local rows = math.max(1, math.floor(cols * ih / (iw * 2)))
+        vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, vim.fn["repeat"]({ "" }, rows + 2))
+
+        state.img = image.from_file(png, {
+            window = state.win,
+            buffer = state.buf,
+            with_virtual_padding = true,
+            x = 0,
+            y = 0,
+            width = cols,
+            height = rows,
+        })
+        state.img:render()
+        -- flush any stray graphics/cursor escapes left on screen
+        vim.schedule(function() vim.cmd("redraw!") end)
+    end)
 end
 
 function M.preview()

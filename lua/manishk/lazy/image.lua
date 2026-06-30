@@ -23,7 +23,7 @@ return {
         max_width_window_percentage = 100,
         max_height_window_percentage = nil,
         window_overlap_clear_enabled = true,
-        editor_only_render_when_focused = true,
+        editor_only_render_when_focused = false,
         tmux_show_only_in_active_window = true,
     },
 }
