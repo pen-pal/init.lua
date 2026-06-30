@@ -1,5 +1,6 @@
 return {
     "ThePrimeagen/99",
+    event = "VeryLazy",
     config = function()
         local _99 = require("99")
         _99.setup({
