@@ -216,7 +216,8 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 ## Documents / preview
 | Key | Action |
 |---|---|
-| `<leader>vp` | **Preview in a split** (`:Preview`) — image/pdf/md/html/tex rendered in-editor (2x DPI, opaque bg; needs Ghostty) |
+| `<leader>vp` | **Preview image/pdf in split** (`:Preview`) — chafa; works in **any** terminal (blocks in Alacritty, crisp graphics in Ghostty) |
+| `<leader>vi` | Preview via image.nvim (`:PreviewImage`) — crisp, **Ghostty only** |
 | `<leader>vo` | Preview in native app (`:PreviewExternal`) — browser/Preview/Skim |
 | `<leader>vP` | Close preview split (`:PreviewClose`) |
 | `<leader>mp` | Markdown live preview in browser (auto-refresh, markdown-preview.nvim) |

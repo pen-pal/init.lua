@@ -268,10 +268,63 @@ function M.open_external()
     end
 end
 
-vim.api.nvim_create_user_command("Preview", M.preview, {})             -- in-editor split
+-- Render an image path in a terminal split via chafa. chafa auto-detects the
+-- terminal: crisp kitty/sixel graphics in Ghostty/kitty, unicode blocks in
+-- Alacritty (lower-res but works with NO graphics protocol).
+local function chafa_in_split(img)
+    if vim.fn.executable("chafa") ~= 1 then
+        vim.notify("chafa not installed (brew install chafa)", vim.log.levels.ERROR)
+        return
+    end
+    close_preview()
+    local src = vim.api.nvim_get_current_win()
+    vim.cmd("botright vsplit")
+    vim.cmd("vertical resize " .. math.floor(vim.o.columns * 0.5))
+    state.win = vim.api.nvim_get_current_win()
+    state.buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_win_set_buf(state.win, state.buf)
+    local w = vim.api.nvim_win_get_width(state.win)
+    local h = vim.api.nvim_win_get_height(state.win)
+    local cmd = string.format("chafa --animate off --size=%dx%d %s", w, math.max(1, h - 1), vim.fn.shellescape(img))
+    vim.api.nvim_set_current_win(state.win)
+    vim.fn.jobstart({ "sh", "-c", cmd }, { term = true })
+    vim.bo[state.buf].filetype = "preview"
+    if vim.api.nvim_win_is_valid(src) then vim.api.nvim_set_current_win(src) end
+end
+
+-- Universal in-editor preview via chafa (works in Alacritty AND Ghostty).
+function M.preview_chafa()
+    local file = vim.fn.expand("%:p")
+    if file == "" then
+        vim.notify("No file to preview", vim.log.levels.WARN)
+        return
+    end
+    local ext = vim.fn.expand("%:e"):lower()
+    if IMG_EXT[ext] then
+        chafa_in_split(file)
+    elseif ext == "pdf" then
+        local png = tmpfile("png")
+        vim.notify("rendering pdf…", vim.log.levels.INFO)
+        vim.system({
+            "gs", "-dBATCH", "-dNOPAUSE", "-dQUIET", "-dFirstPage=1", "-dLastPage=1",
+            "-sDEVICE=png16m", "-r150", "-sOutputFile=" .. png, file,
+        }, {}, function(r)
+            vim.schedule(function()
+                if vim.fn.filereadable(png) == 1 then chafa_in_split(png)
+                else vim.notify(r.stderr or "gs failed", vim.log.levels.ERROR) end
+            end)
+        end)
+    else
+        vim.notify("chafa preview = images/pdf. Use <leader>vo (native app) for docs.", vim.log.levels.WARN)
+    end
+end
+
+vim.api.nvim_create_user_command("Preview", M.preview_chafa, {})        -- chafa (any terminal)
+vim.api.nvim_create_user_command("PreviewImage", M.preview, {})         -- image.nvim (Ghostty only)
 vim.api.nvim_create_user_command("PreviewExternal", M.open_external, {}) -- native app
 vim.api.nvim_create_user_command("PreviewClose", M.close, {})
-vim.keymap.set("n", "<leader>vp", M.preview, { desc = "Preview in split (image/pdf/md/html/tex)" })
+vim.keymap.set("n", "<leader>vp", M.preview_chafa, { desc = "Preview image/pdf in split (chafa, any terminal)" })
+vim.keymap.set("n", "<leader>vi", M.preview, { desc = "Preview via image.nvim (Ghostty only)" })
 vim.keymap.set("n", "<leader>vo", M.open_external, { desc = "Preview in native app (browser/Preview/Skim)" })
 vim.keymap.set("n", "<leader>vP", M.close, { desc = "Close preview split" })
 
