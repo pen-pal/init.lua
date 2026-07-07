@@ -3,20 +3,27 @@ return {
 
     tag = "0.1.8",
     cmd = "Telescope",
-    keys = { "<leader>pf", "<C-p>", "<leader>pws", "<leader>pWs", "<leader>ps", "<leader>vh" },
+    keys = { "<leader>pf", "<C-p>", "<leader>pws", "<leader>pWs", "<leader>ps", "<leader>vh", "<leader>pm" },
 
     dependencies = {
         "nvim-lua/plenary.nvim",
+        "nvim-lua/popup.nvim",
         { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+        "nvim-telescope/telescope-media-files.nvim",
     },
 
     config = function()
         require('telescope').setup({
             extensions = {
                 fzf = {},
+                media_files = {
+                    filetypes = { "png", "webp", "jpg", "jpeg", "gif", "pdf", "svg" },
+                    find_cmd = "rg",
+                },
             },
         })
         pcall(require('telescope').load_extension, 'fzf')
+        pcall(require('telescope').load_extension, 'media_files')
 
         local preview_utils = require("telescope.previewers.utils")
         preview_utils.ts_highlighter = function(bufnr, ft)
@@ -46,6 +53,7 @@ return {
             builtin.grep_string({ search = vim.fn.input("Grep > ") })
         end)
         vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
+        vim.keymap.set('n', '<leader>pm', '<cmd>Telescope media_files<cr>', { desc = "Media files (preview images/pdf)" })
     end
 }
 

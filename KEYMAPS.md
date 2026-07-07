@@ -99,6 +99,7 @@
 | `<C-p>` | Git files (normal mode) |
 | `<leader>pws` / `<leader>pWs` | Grep word / WORD under cursor |
 | `<leader>ps` | Grep (prompt) |
+| `<leader>pm` | Media files — browse + preview images/pdf (telescope-media-files, chafa) |
 | `<leader>pt` | Search todos |
 | `<leader>fp` | Switch project |
 | `<leader>vh` | Help tags |
