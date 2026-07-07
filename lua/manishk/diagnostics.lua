@@ -15,9 +15,9 @@ vim.diagnostic.config({
     },
 })
 
--- rounded borders on hover / signature popups
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
+-- rounded borders on all floats (nvim 0.11+); hover/signature borders are
+-- also handled by noice + lsp_signature.
+pcall(function() vim.o.winborder = "rounded" end)
 
 -- toggle inline diagnostic virtual text
 vim.keymap.set("n", "<leader>vt", function()
