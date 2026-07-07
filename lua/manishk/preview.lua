@@ -316,6 +316,41 @@ local function snacks_in_split(path)
     if vim.api.nvim_win_is_valid(src) then vim.api.nvim_set_current_win(src) end
 end
 
+-- Page navigation for snacks-rendered PDFs: re-attach with `file#page=N`.
+local function image_page(buf, delta)
+    local name = vim.api.nvim_buf_get_name(buf)
+    if not name:lower():match("%.pdf$") then
+        vim.notify("page navigation: PDFs only", vim.log.levels.WARN)
+        return
+    end
+    local count = vim.b[buf].image_pages
+    if count == nil then
+        local out = vim.fn.system({ "pdfinfo", name })
+        count = tonumber(out:match("Pages:%s+(%d+)")) or false
+        vim.b[buf].image_pages = count
+    end
+    local page = (vim.b[buf].image_page or 1) + delta
+    if page < 1 then page = 1 end
+    if count and page > count then page = count end
+    vim.b[buf].image_page = page
+    require("snacks.image.buf").attach(buf, { src = name .. "#page=" .. page })
+    vim.notify("page " .. page .. (count and ("/" .. count) or ""), vim.log.levels.INFO)
+end
+
+-- snacks sets ft=image on rendered buffers (direct open + preview split)
+vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("manishk_image_pages", { clear = true }),
+    pattern = "image",
+    callback = function(args)
+        local o = { buffer = args.buf, silent = true }
+        vim.keymap.set("n", "]p", function() image_page(args.buf, 1) end, o)
+        vim.keymap.set("n", "[p", function() image_page(args.buf, -1) end, o)
+        vim.keymap.set("n", "<C-f>", function() image_page(args.buf, 1) end, o)
+        vim.keymap.set("n", "<C-b>", function() image_page(args.buf, -1) end, o)
+        vim.keymap.set("n", "q", "<cmd>close<cr>", o)
+    end,
+})
+
 local function snacks_supports(path)
     local ok, sup = pcall(function()
         return Snacks and Snacks.image and Snacks.image.supports(path)

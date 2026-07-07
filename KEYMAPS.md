@@ -219,6 +219,7 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 | Key | Action |
 |---|---|
 | *(open the file)* | **snacks.image**: opening a png/jpg/pdf/gif directly renders it **crisp in-buffer** (Ghostty; emacs DocView-style). In Alacritty falls back to text view. |
+| `]p` / `[p` (or `<C-f>`/`<C-b>`) | Next / prev **PDF page** in a rendered document buffer; `q` closes |
 | `<leader>vp` | Preview image/pdf in split (`:Preview`) — **crisp via snacks** in Ghostty, chafa blocks in Alacritty |
 | `<leader>vi` | Preview via image.nvim (`:PreviewImage`) — legacy, flaky in tmux |
 | `<leader>vo` | Preview in native app (`:PreviewExternal`) — browser/Preview/Skim |
