@@ -169,16 +169,29 @@ local function display(png)
         local rows = math.max(1, math.floor(cols * ih / (iw * 2)))
         vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, vim.fn["repeat"]({ "" }, rows + 2))
 
-        state.img = image.from_file(png, {
+        local ok_img, img = pcall(image.from_file, png, {
             window = state.win,
             buffer = state.buf,
             with_virtual_padding = true,
             x = 0,
             y = 0,
             width = cols,
-            height = rows,
         })
-        state.img:render()
+        state.img = ok_img and img or nil
+        if not state.img then
+            vim.notify(
+                "image.nvim couldn't render. Need a graphics terminal (Ghostty/kitty) + tmux allow-passthrough. In Alacritty use <leader>vp (chafa).",
+                vim.log.levels.WARN
+            )
+            close_preview()
+            return
+        end
+        local render_ok = pcall(function() state.img:render() end)
+        if not render_ok then
+            vim.notify("image.nvim render failed", vim.log.levels.WARN)
+            close_preview()
+            return
+        end
         -- flush any stray graphics/cursor escapes left on screen
         vim.schedule(function() vim.cmd("redraw!") end)
     end)
