@@ -17,7 +17,7 @@ return {
             extensions = {
                 fzf = {},
                 media_files = {
-                    filetypes = { "png", "webp", "jpg", "jpeg", "gif", "pdf", "svg" },
+                    filetypes = { "png", "webp", "jpg", "jpeg", "gif", "pdf", "svg", "mp4", "webm", "mov", "mkv" },
                     find_cmd = "rg",
                 },
             },

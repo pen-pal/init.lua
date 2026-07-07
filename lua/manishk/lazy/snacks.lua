@@ -34,7 +34,7 @@ return {
             "<leader>pm",
             function()
                 Snacks.picker.files({
-                    ft = { "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "pdf" },
+                    ft = { "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "pdf", "mp4", "webm", "mov", "mkv" },
                 })
             end,
             desc = "Media files (crisp preview — snacks)",
