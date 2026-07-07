@@ -333,7 +333,21 @@ local function image_page(buf, delta)
     if page < 1 then page = 1 end
     if count and page > count then page = count end
     vim.b[buf].image_page = page
-    require("snacks.image.buf").attach(buf, { src = name .. "#page=" .. page })
+    -- NOTE: can't use image.buf.attach here — its supports_file() checks the
+    -- extension of the raw string and "file.pdf#page=2" fails it. placement
+    -- handles the #page= suffix correctly, so drive it directly.
+    local ok, err = pcall(function()
+        Snacks.image.placement.clean(buf)
+        -- clear any "unsupported" error text a failed attach left behind
+        vim.bo[buf].modifiable = true
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+        Snacks.util.bo(buf, { filetype = "image", modifiable = false, modified = false, swapfile = false })
+        Snacks.image.placement.new(buf, name .. "#page=" .. page, { conceal = true, auto_resize = true })
+    end)
+    if not ok then
+        vim.notify("page render failed: " .. tostring(err), vim.log.levels.ERROR)
+        return
+    end
     vim.notify("page " .. page .. (count and ("/" .. count) or ""), vim.log.levels.INFO)
 end
 
