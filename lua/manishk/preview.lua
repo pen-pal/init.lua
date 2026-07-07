@@ -305,7 +305,26 @@ local function chafa_in_split(img)
     if vim.api.nvim_win_is_valid(src) then vim.api.nvim_set_current_win(src) end
 end
 
--- Universal in-editor preview via chafa (works in Alacritty AND Ghostty).
+-- Open a file in the preview vsplit and let snacks.image render it (crisp).
+local function snacks_in_split(path)
+    close_preview()
+    local src = vim.api.nvim_get_current_win()
+    vim.cmd("botright vsplit " .. vim.fn.fnameescape(path))
+    vim.cmd("vertical resize " .. math.floor(vim.o.columns * 0.5))
+    state.win = vim.api.nvim_get_current_win()
+    state.buf = vim.api.nvim_get_current_buf()
+    if vim.api.nvim_win_is_valid(src) then vim.api.nvim_set_current_win(src) end
+end
+
+local function snacks_supports(path)
+    local ok, sup = pcall(function()
+        return Snacks and Snacks.image and Snacks.image.supports(path)
+    end)
+    return ok and sup
+end
+
+-- Universal in-editor preview. Crisp via snacks.image where the terminal
+-- allows (Ghostty); falls back to chafa text-blocks (Alacritty).
 function M.preview_chafa()
     local file = vim.fn.expand("%:p")
     if file == "" then
@@ -313,8 +332,10 @@ function M.preview_chafa()
         return
     end
     local ext = vim.fn.expand("%:e"):lower()
-    if IMG_EXT[ext] then
-        chafa_in_split(file)
+    if (IMG_EXT[ext] or ext == "pdf") and snacks_supports(file) then
+        snacks_in_split(file) -- crisp (snacks renders images + pdf natively)
+    elseif IMG_EXT[ext] then
+        chafa_in_split(file) -- non-graphics terminal fallback
     elseif ext == "pdf" then
         local png = tmpfile("png")
         vim.notify("rendering pdf…", vim.log.levels.INFO)
@@ -328,7 +349,7 @@ function M.preview_chafa()
             end)
         end)
     else
-        vim.notify("chafa preview = images/pdf. Use <leader>vo (native app) for docs.", vim.log.levels.WARN)
+        vim.notify("preview = images/pdf. Use <leader>vo (native app) for docs.", vim.log.levels.WARN)
     end
 end
 

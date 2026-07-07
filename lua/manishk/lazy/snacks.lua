@@ -21,10 +21,23 @@ return {
         indent = { enabled = false },
         input = { enabled = false },
         notifier = { enabled = false },
-        picker = { enabled = false },
+        -- picker: used for media browsing — its preview pane renders images
+        -- CRISP via snacks.image (telescope's previewer is text-only, can't).
+        picker = { enabled = true },
         quickfile = { enabled = false },
         scroll = { enabled = false },
         statuscolumn = { enabled = false },
         words = { enabled = false },
+    },
+    keys = {
+        {
+            "<leader>pm",
+            function()
+                Snacks.picker.files({
+                    ft = { "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "pdf" },
+                })
+            end,
+            desc = "Media files (crisp preview — snacks)",
+        },
     },
 }

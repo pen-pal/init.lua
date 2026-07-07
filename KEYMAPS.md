@@ -99,7 +99,8 @@
 | `<C-p>` | Git files (normal mode) |
 | `<leader>pws` / `<leader>pWs` | Grep word / WORD under cursor |
 | `<leader>ps` | Grep (prompt) |
-| `<leader>pm` | Media files — browse + preview images/pdf (telescope-media-files, chafa) |
+| `<leader>pm` | Media files — **crisp** preview in picker (snacks.picker + snacks.image, Ghostty) |
+| `<leader>pM` | Media files via telescope-media-files (text-preview, blocky — comparison) |
 | `<leader>pt` | Search todos |
 | `<leader>fp` | Switch project |
 | `<leader>vh` | Help tags |
@@ -218,7 +219,7 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 | Key | Action |
 |---|---|
 | *(open the file)* | **snacks.image**: opening a png/jpg/pdf/gif directly renders it **crisp in-buffer** (Ghostty; emacs DocView-style). In Alacritty falls back to text view. |
-| `<leader>vp` | Preview image/pdf in split (`:Preview`) — chafa; works in **any** terminal (blocky in Alacritty) |
+| `<leader>vp` | Preview image/pdf in split (`:Preview`) — **crisp via snacks** in Ghostty, chafa blocks in Alacritty |
 | `<leader>vi` | Preview via image.nvim (`:PreviewImage`) — legacy, flaky in tmux |
 | `<leader>vo` | Preview in native app (`:PreviewExternal`) — browser/Preview/Skim |
 | `<leader>vP` | Close preview split (`:PreviewClose`) |
