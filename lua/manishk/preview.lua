@@ -332,13 +332,26 @@ function M.preview_chafa()
     end
 end
 
+-- Open current file in the Emacs GUI (crisp): DocView renders PDFs (via gs),
+-- native image display, eww for html. Separate window, like Preview.app.
+function M.open_emacs()
+    local file = vim.fn.expand("%:p")
+    if file == "" then
+        vim.notify("No file to preview", vim.log.levels.WARN)
+        return
+    end
+    vim.system({ "open", "-a", "Emacs", file })
+end
+
 vim.api.nvim_create_user_command("Preview", M.preview_chafa, {})        -- chafa (any terminal)
 vim.api.nvim_create_user_command("PreviewImage", M.preview, {})         -- image.nvim (Ghostty only)
+vim.api.nvim_create_user_command("PreviewEmacs", M.open_emacs, {})      -- Emacs GUI (crisp)
 vim.api.nvim_create_user_command("PreviewExternal", M.open_external, {}) -- native app
 vim.api.nvim_create_user_command("PreviewClose", M.close, {})
 vim.keymap.set("n", "<leader>vp", M.preview_chafa, { desc = "Preview image/pdf in split (chafa, any terminal)" })
 vim.keymap.set("n", "<leader>vi", M.preview, { desc = "Preview via image.nvim (Ghostty only)" })
 vim.keymap.set("n", "<leader>vo", M.open_external, { desc = "Preview in native app (browser/Preview/Skim)" })
+vim.keymap.set("n", "<leader>ve", M.open_emacs, { desc = "Preview in Emacs GUI (crisp pdf/image)" })
 vim.keymap.set("n", "<leader>vP", M.close, { desc = "Close preview split" })
 
 return M
