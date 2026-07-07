@@ -7,10 +7,10 @@ return {
         backend = "kitty",
         processor = "magick_cli", -- uses imagemagick CLI; no luarocks needed
         integrations = {
+            -- markdown/org inline images now handled by snacks.image (doc);
+            -- image.nvim kept only as the library behind :PreviewImage.
             markdown = {
-                enabled = true,
-                only_render_image_at_cursor = false,
-                filetypes = { "markdown", "vimwiki" },
+                enabled = false,
             },
             neorg = { enabled = false },
             typst = { enabled = true },

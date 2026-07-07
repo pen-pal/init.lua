@@ -217,8 +217,9 @@ In `.org` buffers (orgmode defaults): `<CR>` follow/toggle, `cit` cycle TODO, `<
 ## Documents / preview
 | Key | Action |
 |---|---|
-| `<leader>vp` | **Preview image/pdf in split** (`:Preview`) — chafa; works in **any** terminal (blocks in Alacritty, crisp graphics in Ghostty) |
-| `<leader>vi` | Preview via image.nvim (`:PreviewImage`) — crisp, **Ghostty only** |
+| *(open the file)* | **snacks.image**: opening a png/jpg/pdf/gif directly renders it **crisp in-buffer** (Ghostty; emacs DocView-style). In Alacritty falls back to text view. |
+| `<leader>vp` | Preview image/pdf in split (`:Preview`) — chafa; works in **any** terminal (blocky in Alacritty) |
+| `<leader>vi` | Preview via image.nvim (`:PreviewImage`) — legacy, flaky in tmux |
 | `<leader>vo` | Preview in native app (`:PreviewExternal`) — browser/Preview/Skim |
 | `<leader>vP` | Close preview split (`:PreviewClose`) |
 | `<leader>mp` | Markdown live preview in browser (auto-refresh, markdown-preview.nvim) |
